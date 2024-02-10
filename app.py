@@ -53,6 +53,14 @@ def view_cluster(cluster, groups):
         plt.imshow(img)
         plt.axis('off')
 
+# Function to generate and display cluster visualization
+def display_cluster_visualization(groups):
+    st.subheader("Cluster Visualization")
+    for cluster_id in range(14):
+        view_cluster(cluster_id, groups)
+        plt.tight_layout()
+        st.pyplot()
+
 # Main Streamlit app
 def main():
     st.title("Image Clustering App")
@@ -84,9 +92,6 @@ def main():
         # Save the trained model using joblib
         joblib.dump(clusters, "best_model.joblib")
 
-        # Display cluster visualization (you can customize this part)
-        st.subheader("Cluster Visualization")
-
         # Create or update 'groups' based on clustering results
         groups = {}
         for file, cluster in zip(train_labels, clusters.labels_):
@@ -96,8 +101,8 @@ def main():
             else:
                 groups[cluster].append(file)
 
-        for cluster_id in range(14):
-            view_cluster(cluster_id, groups)
+        # Display cluster visualization
+        display_cluster_visualization(groups)
 
 if __name__ == "__main__":
     main()
