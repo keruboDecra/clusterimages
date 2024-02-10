@@ -32,8 +32,7 @@ def crawl_images(path):
 # Function to process images from a zip file
 def process_zip_file(zip_file):
     # Add code to extract and process images from the zip file
-    # For now, let's just return a placeholder value
-    return np.zeros((1, 32, 32, 3)), np.array(['placeholder_label'])
+    pass
 
 # Main Streamlit app
 def main():
