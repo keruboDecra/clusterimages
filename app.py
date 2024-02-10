@@ -8,7 +8,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 
 # Load the trained model
-with open(path + "/best_model.pkl", "rb") as f:
+with open("/best_model.pkl", "rb") as f:
     clusters = pickle.load(f)
 
 # Function to crawl images from a directory
