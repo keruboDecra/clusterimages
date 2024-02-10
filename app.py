@@ -2,14 +2,12 @@ import streamlit as st
 import os
 import numpy as np
 from sklearn.cluster import KMeans
-import pickle
-from tensorflow.keras.preprocessing.image import load_img
+import joblib  # Import joblib
 from PIL import Image
 import matplotlib.pyplot as plt
 
-# Load the trained model
-with open("best_model.pkl", "rb") as f:
-    clusters = pickle.load(f)
+# Load the trained model using joblib
+clusters = joblib.load("best_model.joblib")
 
 # Function to crawl images from a directory
 def crawl_images(path):
@@ -60,9 +58,8 @@ def main():
         kmeans = KMeans(n_clusters=14, random_state=22)
         clusters = kmeans.fit(train_images)
         
-        # Save the trained model
-        with open(path + "/best_model.pkl", "wb") as f:
-            pickle.dump(clusters, f)
+        # Save the trained model using joblib
+        joblib.dump(clusters, "best_model.joblib")
 
         # Display cluster visualization (you can customize this part)
         st.subheader("Cluster Visualization")
