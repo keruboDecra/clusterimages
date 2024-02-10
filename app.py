@@ -7,7 +7,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 
 # Load the trained model using joblib
-clusters = joblib.load("best_model.joblib")
+clusters = joblib.load("bestmodel.joblib")
 
 # Function to crawl images from a directory
 def crawl_images(path):
