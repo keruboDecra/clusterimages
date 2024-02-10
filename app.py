@@ -21,6 +21,10 @@ def process_zip_file(zip_file):
                     images.append(img)
                     st.image(img, caption=file_info.filename, use_column_width=True)
 
+    if not images:  # Check if no valid images were processed
+        st.error("No valid images found in the ZIP file.")
+        return None, None
+
     return np.array(images), np.array(imageNames)
 
 # Function that lets you view a cluster (based on identifier)
@@ -55,7 +59,7 @@ def main():
 
     # Train and Cluster button in the main section
     with st.form(key='train_cluster_form'):
-        if st.form_submit_button("Train and Cluster"):
+        if train_images is not None and st.form_submit_button("Train and Cluster"):
             kmeans = KMeans(n_clusters=14, random_state=22)
             clusters = kmeans.fit(train_images)
 
