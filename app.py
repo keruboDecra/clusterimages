@@ -1,8 +1,9 @@
 import streamlit as st
 import numpy as np
 from sklearn.cluster import KMeans
-import joblib  # Import joblib
+import joblib
 from PIL import Image
+import zipfile
 import matplotlib.pyplot as plt
 
 # Function to process images from a zip file
@@ -10,17 +11,15 @@ def process_zip_file(zip_file):
     images = []
     imageNames = []
     with st.spinner("Processing ZIP file..."):
-        with st.beta_expander("See files in ZIP"):
-            with st.echo():
-                with zipfile.ZipFile(zip_file) as z:
-                    for file_info in z.infolist():
-                        if file_info.filename.endswith('.jpg'):
-                            imageNames.append(file_info.filename)
-                            img = Image.open(z.open(file_info.filename))
-                            img = img.resize((32, 32))
-                            img = np.array(img)
-                            images.append(img)
-                            st.image(img, caption=file_info.filename, use_column_width=True)
+        with zipfile.ZipFile(zip_file) as z:
+            for file_info in z.infolist():
+                if file_info.filename.endswith('.jpg'):
+                    imageNames.append(file_info.filename)
+                    img = Image.open(z.open(file_info.filename))
+                    img = img.resize((32, 32))
+                    img = np.array(img)
+                    images.append(img)
+                    st.image(img, caption=file_info.filename, use_column_width=True)
 
     return np.array(images), np.array(imageNames)
 
