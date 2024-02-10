@@ -77,28 +77,29 @@ def main():
             if st.sidebar.button("Process ZIP"):
                 train_images, train_labels = process_zip_file(uploaded_zip)
 
-    if train_images is not None and st.button("Train Clustering Model"):
-        kmeans = KMeans(n_clusters=14, random_state=22)
-        clusters = kmeans.fit(train_images)
+    # Train and Cluster button in the main section
+    if train_images is not None:
+        if st.button("Train and Cluster"):
+            kmeans = KMeans(n_clusters=14, random_state=22)
+            clusters = kmeans.fit(train_images)
 
-        # Save the trained model using joblib
-        joblib.dump(clusters, "best_model.joblib")
+            # Save the trained model using joblib
+            joblib.dump(clusters, "best_model.joblib")
 
-        # Create or update 'groups' based on clustering results
-        groups = {}
-        for file, cluster in zip(train_labels, clusters.labels_):
-            if cluster not in groups.keys():
-                groups[cluster] = []
-                groups[cluster].append(file)
-            else:
-                groups[cluster].append(file)
+            # Display cluster visualization (you can customize this part)
+            st.subheader("Cluster Visualization")
 
-        st.success("Training and Clustering Successful!")
+            # Create or update 'groups' based on clustering results
+            groups = {}
+            for file, cluster in zip(train_labels, clusters.labels_):
+                if cluster not in groups.keys():
+                    groups[cluster] = []
+                    groups[cluster].append(file)
+                else:
+                    groups[cluster].append(file)
 
-    if groups is not None:
-        st.subheader("Cluster Visualization")
-        cluster_id = st.slider("Select Cluster:", min_value=0, max_value=13, step=1)
-        view_cluster(cluster_id, groups)
+            for cluster_id in range(14):
+                view_cluster(cluster_id, groups)
 
 if __name__ == "__main__":
     main()
