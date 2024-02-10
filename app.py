@@ -1,10 +1,13 @@
+
 import streamlit as st
 import os
 import numpy as np
 from sklearn.cluster import KMeans
 import joblib  # Import joblib
+import cv2
 from PIL import Image
 import matplotlib.pyplot as plt
+from zipfile import ZipFile
 
 # Load the trained model using joblib
 clusters = joblib.load("bestmodel.joblib")
@@ -18,7 +21,7 @@ def crawl_images(path):
             with os.scandir(file) as rooms:
                 for imgs in rooms:
                     if imgs.name.endswith('.jpg'):
-                        file_path = path + "/" + file.name + "/" + imgs.name
+                        file_path = os.path.join(path, file.name, imgs.name)
                         imageNames.append(file_path)
                         img = cv2.imread(file_path)
                         try:
@@ -31,8 +34,20 @@ def crawl_images(path):
 
 # Function to process images from a zip file
 def process_zip_file(zip_file):
-    # Add code to extract and process images from the zip file
-    pass
+    images = []
+    imageNames = []
+    with ZipFile(zip_file) as z:
+        for file_info in z.infolist():
+            if file_info.filename.endswith('.jpg'):
+                with z.open(file_info.filename) as file:
+                    img = Image.open(file)
+                    img = img.resize((32, 32))
+                    img = np.array(img)
+                    images.append(img)
+                    imageNames.append(file_info.filename)
+    return np.array(images), np.array(imageNames)
+
+
 
 # Main Streamlit app
 def main():
