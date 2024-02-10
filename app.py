@@ -1,15 +1,10 @@
-
 import streamlit as st
 import os
 import numpy as np
 from sklearn.cluster import KMeans
 import joblib  # Import joblib
 from PIL import Image
-import matplotlib.pyplot as plt
 from zipfile import ZipFile
-
-# Load the trained model using joblib
-clusters = joblib.load("bestmodel.joblib")
 
 # Function to crawl images from a directory
 def crawl_images(path):
@@ -46,11 +41,18 @@ def process_zip_file(zip_file):
                     imageNames.append(file_info.filename)
     return np.array(images), np.array(imageNames)
 
-
+# Function that lets you view a cluster (based on identifier)
+def view_cluster(cluster):
+    # Implement the load_img function if not already done
+    # You can replace it with your actual image loading logic
+    pass
 
 # Main Streamlit app
 def main():
     st.title("Image Clustering App")
+
+    # Initialize train_images
+    train_images = None
 
     # Sidebar: Input method selection
     input_method = st.sidebar.radio("Select Input Method:", ("Web Crawl", "Upload ZIP"))
@@ -68,7 +70,7 @@ def main():
             if st.sidebar.button("Process ZIP"):
                 train_images, train_labels = process_zip_file(uploaded_zip)
 
-    if st.button("Train and Cluster"):
+    if train_images is not None and st.button("Train and Cluster"):
         kmeans = KMeans(n_clusters=14, random_state=22)
         clusters = kmeans.fit(train_images)
         
@@ -79,20 +81,6 @@ def main():
         st.subheader("Cluster Visualization")
         for cluster_id in range(14):
             view_cluster(cluster_id)
-
-# Function that lets you view a cluster (based on identifier)
-def view_cluster(cluster):
-    plt.figure(figsize=(25, 25))
-    files = groups[cluster]
-    if len(files) > 30:
-        print(f"Clipping cluster size from {len(files)} to +30")
-        files = files[:29]
-    for index, file in enumerate(files):
-        plt.subplot(10, 10, index + 1)
-        img = load_img(file)
-        img = np.array(img)
-        plt.imshow(img)
-        plt.axis('off')
 
 if __name__ == "__main__":
     main()
