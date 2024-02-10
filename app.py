@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 import zipfile
+import requests
 import numpy as np
 import joblib
 from PIL import Image, UnidentifiedImageError
@@ -9,7 +10,7 @@ from tensorflow.keras.preprocessing.image import load_img
 import matplotlib.pyplot as plt
 
 # Load the trained model from the saved file using joblib
-model_path = "bestmodel.joblib"  # Replace with your actual path
+model_path = "path/to/bestmodel.joblib"  # Replace with your actual path
 clusters = joblib.load(model_path)
 
 # function that lets you view a cluster (based on identifier)
@@ -32,6 +33,10 @@ def view_cluster(cluster):
 # Streamlit app
 def main():
     st.title("Image Clustering Web App")
+    
+    # Provide a link to download the sample zip file
+    st.markdown("You can use the provided sample zip file for testing. [Download Sample Zip File](https://drive.google.com/uc?export=download&id=11RF8O9CSsqSULkYI8fuOvrYviECnksa-)")
+    
     uploaded_file = st.file_uploader("Upload a zip file containing images", type="zip")
 
     if uploaded_file is not None:
