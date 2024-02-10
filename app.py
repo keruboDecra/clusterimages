@@ -10,7 +10,7 @@ from tensorflow.keras.preprocessing.image import load_img
 import matplotlib.pyplot as plt
 
 # Load the trained model from the saved file using joblib
-model_path = "path/to/bestmodel.joblib"  # Replace with your actual path
+model_path = "bestmodel.joblib"  # Replace with your actual path
 clusters = joblib.load(model_path)
 
 # function that lets you view a cluster (based on identifier)
