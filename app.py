@@ -55,7 +55,7 @@ def main():
 
     # Train and Cluster button in the main section
     with st.form(key='train_cluster_form'):
-        if st.button("Train and Cluster"):
+        if st.form_submit_button("Train and Cluster"):
             kmeans = KMeans(n_clusters=14, random_state=22)
             clusters = kmeans.fit(train_images)
 
