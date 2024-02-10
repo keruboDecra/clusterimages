@@ -5,10 +5,11 @@ import numpy as np
 from sklearn.cluster import KMeans
 import pickle
 from tensorflow.keras.preprocessing.image import load_img
+from PIL import Image
 import matplotlib.pyplot as plt
 
 # Load the trained model
-with open("/best_model.pkl", "rb") as f:
+with open(path + "/best_model.pkl", "rb") as f:
     clusters = pickle.load(f)
 
 # Function to crawl images from a directory
