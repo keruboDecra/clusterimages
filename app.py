@@ -46,40 +46,37 @@ def view_cluster(cluster, groups):
 def main():
     st.title("Image Clustering App")
 
-    # Initialize train_images and groups
+    # Initialize variables
     train_images, train_labels = None, None
-    groups = None
 
     # Sidebar: Input method selection
-    with st.sidebar.form(key='upload_form'):
+    input_method = st.sidebar.radio("Select Input Method:", ("Web Crawl", "Upload ZIP"))
+
+    if input_method == "Web Crawl":
+        st.sidebar.header("Web Crawl Settings")
+        crawl_path = st.sidebar.text_input("Enter the directory path for web crawl:")
+        if st.sidebar.button("Crawl Images"):
+            train_images, train_labels = crawl_images(crawl_path)
+
+    elif input_method == "Upload ZIP":
         st.sidebar.header("ZIP Upload Settings")
-        uploaded_zip = st.file_uploader("Upload ZIP file", type="zip")
-        if st.form_submit_button("Process ZIP"):
-            train_images, train_labels = process_zip_file(uploaded_zip)
+        uploaded_zip = st.sidebar.file_uploader("Upload ZIP file", type="zip")
+        if uploaded_zip is not None:
+            if st.sidebar.button("Process ZIP"):
+                train_images, train_labels = process_zip_file(uploaded_zip)
 
-    # Train and Cluster button in the main section
-    with st.form(key='train_cluster_form'):
-        if train_images is not None and st.form_submit_button("Train and Cluster"):
-            kmeans = KMeans(n_clusters=14, random_state=22)
-            clusters = kmeans.fit(train_images)
+    if train_images is not None and st.button("Train and Cluster"):
+        kmeans = KMeans(n_clusters=14, random_state=22)
+        clusters = kmeans.fit(train_images)
+        
+        # Save the trained model using joblib
+        joblib.dump(clusters, "best_model.joblib")
 
-            # Save the trained model using joblib
-            joblib.dump(clusters, "best_model.joblib")
+        # Display cluster visualization (you can customize this part)
+        st.subheader("Cluster Visualization")
+        for cluster_id in range(14):
+            view_cluster(cluster_id)
 
-            # Display cluster visualization (you can customize this part)
-            st.subheader("Cluster Visualization")
-
-            # Create or update 'groups' based on clustering results
-            groups = {}
-            for file, cluster in zip(train_labels, clusters.labels_):
-                if cluster not in groups.keys():
-                    groups[cluster] = []
-                    groups[cluster].append(file)
-                else:
-                    groups[cluster].append(file)
-
-            for cluster_id in range(14):
-                view_cluster(cluster_id, groups)
 
 if __name__ == "__main__":
     main()
