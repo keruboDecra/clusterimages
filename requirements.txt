@@ -10,3 +10,5 @@ scipy
 threadpoolctl
 requests
 beautifulsoup4==4.12.2
+tensorflow
+matplotlib
