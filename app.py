@@ -4,7 +4,6 @@ import os
 import numpy as np
 from sklearn.cluster import KMeans
 import joblib  # Import joblib
-import cv2
 from PIL import Image
 import matplotlib.pyplot as plt
 from zipfile import ZipFile
