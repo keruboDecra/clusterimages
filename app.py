@@ -1,12 +1,15 @@
 import streamlit as st
-from PIL import Image, UnidentifiedImageError
-import numpy as np
 import os
-import joblib
 import zipfile
+import numpy as np
+import joblib
+from PIL import Image, UnidentifiedImageError
+from sklearn.cluster import KMeans
+from tensorflow.keras.preprocessing.image import load_img
+import matplotlib.pyplot as plt
 
 # Load the trained model from the saved file using joblib
-model_path = "bestmodel.joblib"
+model_path = "bestmodel.joblib"  # Replace with your actual path
 clusters = joblib.load(model_path)
 
 # function that lets you view a cluster (based on identifier)
@@ -34,9 +37,10 @@ def main():
     if uploaded_file is not None:
         st.text("Processing uploaded zip file...")
 
-        # Extract the contents of the zip file
-        zip_path = "/content/uploads"
+        # Create the temporary directory if it doesn't exist
+        zip_path = "uploads"
         os.makedirs(zip_path, exist_ok=True)
+
         with open(os.path.join(zip_path, "uploaded.zip"), "wb") as f:
             f.write(uploaded_file.getvalue())
 
