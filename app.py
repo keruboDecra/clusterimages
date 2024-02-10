@@ -5,6 +5,7 @@ from sklearn.cluster import KMeans
 import joblib  # Import joblib
 from PIL import Image
 from zipfile import ZipFile
+import matplotlib.pyplot as plt
 
 # Function to crawl images from a directory
 def crawl_images(path):
@@ -17,12 +18,9 @@ def crawl_images(path):
                     if imgs.name.endswith('.jpg'):
                         file_path = os.path.join(path, file.name, imgs.name)
                         imageNames.append(file_path)
-                        img = cv2.imread(file_path)
-                        try:
-                            img = cv2.resize(img, (32, 32))
-                            img = img.astype(np.float32)
-                        except:
-                            break
+                        img = Image.open(file_path)
+                        img = img.resize((32, 32))
+                        img = np.array(img)
                         images.append(img)
     return np.array(images), np.array(imageNames)
 
@@ -42,17 +40,26 @@ def process_zip_file(zip_file):
     return np.array(images), np.array(imageNames)
 
 # Function that lets you view a cluster (based on identifier)
-def view_cluster(cluster):
-    # Implement the load_img function if not already done
-    # You can replace it with your actual image loading logic
-    pass
+def view_cluster(cluster, groups):
+    plt.figure(figsize=(25, 25))
+    files = groups[cluster]
+    if len(files) > 30:
+        print(f"Clipping cluster size from {len(files)} to +30")
+        files = files[:29]
+    for index, file in enumerate(files):
+        plt.subplot(10, 10, index + 1)
+        img = Image.open(file)
+        img = np.array(img)
+        plt.imshow(img)
+        plt.axis('off')
 
 # Main Streamlit app
 def main():
     st.title("Image Clustering App")
 
-    # Initialize train_images
-    train_images = None
+    # Initialize train_images and groups
+    train_images, train_labels = None, None
+    groups = None
 
     # Sidebar: Input method selection
     input_method = st.sidebar.radio("Select Input Method:", ("Web Crawl", "Upload ZIP"))
@@ -73,14 +80,24 @@ def main():
     if train_images is not None and st.button("Train and Cluster"):
         kmeans = KMeans(n_clusters=14, random_state=22)
         clusters = kmeans.fit(train_images)
-        
+
         # Save the trained model using joblib
         joblib.dump(clusters, "best_model.joblib")
 
         # Display cluster visualization (you can customize this part)
         st.subheader("Cluster Visualization")
+
+        # Create or update 'groups' based on clustering results
+        groups = {}
+        for file, cluster in zip(train_labels, clusters.labels_):
+            if cluster not in groups.keys():
+                groups[cluster] = []
+                groups[cluster].append(file)
+            else:
+                groups[cluster].append(file)
+
         for cluster_id in range(14):
-            view_cluster(cluster_id)
+            view_cluster(cluster_id, groups)
 
 if __name__ == "__main__":
     main()
