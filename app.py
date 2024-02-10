@@ -7,7 +7,7 @@ from sklearn.cluster import KMeans
 import joblib
 
 # Load the trained model
-model_path = "/content/drive/My Drive/linksclassificationmodels/bestmodel.joblib"
+model_path = "bestmodel.joblib"
 clusters = joblib.load(model_path)
 
 # Function to extract images from a zip file
