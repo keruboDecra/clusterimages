@@ -16,7 +16,7 @@ def process_zip_file(zip_file):
                 if file_info.filename.endswith('.jpg'):
                     imageNames.append(file_info.filename)
                     img = Image.open(z.open(file_info.filename))
-                    img = img.resize((32, 32))
+                    img = img.resize((16, 16))  # Resize to 16x16 pixels
                     img = np.array(img)
                     images.append(img)
                     st.image(img, caption=file_info.filename, use_column_width=True)
@@ -33,6 +33,7 @@ def view_cluster(cluster, groups):
     for index, file in enumerate(files):
         plt.subplot(10, 10, index + 1)
         img = Image.open(file)
+        img = img.resize((16, 16))  # Resize to 16x16 pixels
         img = np.array(img)
         plt.imshow(img)
         plt.axis('off')
@@ -46,33 +47,35 @@ def main():
     groups = None
 
     # Sidebar: Input method selection
-    st.sidebar.header("ZIP Upload Settings")
-    uploaded_zip = st.sidebar.file_uploader("Upload ZIP file", type="zip")
-    if uploaded_zip is not None and st.sidebar.button("Process ZIP"):
-        train_images, train_labels = process_zip_file(uploaded_zip)
+    with st.sidebar.form(key='upload_form'):
+        st.sidebar.header("ZIP Upload Settings")
+        uploaded_zip = st.file_uploader("Upload ZIP file", type="zip")
+        if st.form_submit_button("Process ZIP"):
+            train_images, train_labels = process_zip_file(uploaded_zip)
 
     # Train and Cluster button in the main section
-    if train_images is not None and st.sidebar.button("Train and Cluster"):
-        kmeans = KMeans(n_clusters=14, random_state=22)
-        clusters = kmeans.fit(train_images)
+    with st.form(key='train_cluster_form'):
+        if st.button("Train and Cluster"):
+            kmeans = KMeans(n_clusters=14, random_state=22)
+            clusters = kmeans.fit(train_images)
 
-        # Save the trained model using joblib
-        joblib.dump(clusters, "best_model.joblib")
+            # Save the trained model using joblib
+            joblib.dump(clusters, "best_model.joblib")
 
-        # Display cluster visualization (you can customize this part)
-        st.subheader("Cluster Visualization")
+            # Display cluster visualization (you can customize this part)
+            st.subheader("Cluster Visualization")
 
-        # Create or update 'groups' based on clustering results
-        groups = {}
-        for file, cluster in zip(train_labels, clusters.labels_):
-            if cluster not in groups.keys():
-                groups[cluster] = []
-                groups[cluster].append(file)
-            else:
-                groups[cluster].append(file)
+            # Create or update 'groups' based on clustering results
+            groups = {}
+            for file, cluster in zip(train_labels, clusters.labels_):
+                if cluster not in groups.keys():
+                    groups[cluster] = []
+                    groups[cluster].append(file)
+                else:
+                    groups[cluster].append(file)
 
-        for cluster_id in range(14):
-            view_cluster(cluster_id, groups)
+            for cluster_id in range(14):
+                view_cluster(cluster_id, groups)
 
 if __name__ == "__main__":
     main()
