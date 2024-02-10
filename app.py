@@ -48,33 +48,31 @@ def main():
     # Sidebar: Input method selection
     st.sidebar.header("ZIP Upload Settings")
     uploaded_zip = st.sidebar.file_uploader("Upload ZIP file", type="zip")
-    if uploaded_zip is not None:
-        if st.sidebar.button("Process ZIP"):
-            train_images, train_labels = process_zip_file(uploaded_zip)
+    if uploaded_zip is not None and st.sidebar.button("Process ZIP"):
+        train_images, train_labels = process_zip_file(uploaded_zip)
 
     # Train and Cluster button in the main section
-    if train_images is not None:
-        if st.button("Train and Cluster"):
-            kmeans = KMeans(n_clusters=14, random_state=22)
-            clusters = kmeans.fit(train_images)
+    if train_images is not None and st.sidebar.button("Train and Cluster"):
+        kmeans = KMeans(n_clusters=14, random_state=22)
+        clusters = kmeans.fit(train_images)
 
-            # Save the trained model using joblib
-            joblib.dump(clusters, "best_model.joblib")
+        # Save the trained model using joblib
+        joblib.dump(clusters, "best_model.joblib")
 
-            # Display cluster visualization (you can customize this part)
-            st.subheader("Cluster Visualization")
+        # Display cluster visualization (you can customize this part)
+        st.subheader("Cluster Visualization")
 
-            # Create or update 'groups' based on clustering results
-            groups = {}
-            for file, cluster in zip(train_labels, clusters.labels_):
-                if cluster not in groups.keys():
-                    groups[cluster] = []
-                    groups[cluster].append(file)
-                else:
-                    groups[cluster].append(file)
+        # Create or update 'groups' based on clustering results
+        groups = {}
+        for file, cluster in zip(train_labels, clusters.labels_):
+            if cluster not in groups.keys():
+                groups[cluster] = []
+                groups[cluster].append(file)
+            else:
+                groups[cluster].append(file)
 
-            for cluster_id in range(14):
-                view_cluster(cluster_id, groups)
+        for cluster_id in range(14):
+            view_cluster(cluster_id, groups)
 
 if __name__ == "__main__":
     main()
